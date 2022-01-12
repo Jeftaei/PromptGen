@@ -1,4 +1,4 @@
-List of all valid prompts (2 letters) and their frequency of appearing as a percent | Blacklisted Characters: ['x', 'z', 'j', 'q'] | Sorted by frequency
+List of all valid prompts (x letters only) and their frequency of appearing as a percent | Blacklisted Characters: ['x', 'z', 'j', 'q'] | Sorted by frequency
 
 ing  |  Frequency: 1.3335%
 ati  |  Frequency: 0.6164%

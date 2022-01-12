@@ -44,7 +44,7 @@ def FormatPrompt(prompt: str, charFreq: float) -> str:
 
 def PromptFrequency(d: dict) -> Dict[str, float]:
     """Returns a frequency chart of the supplied `d` dict with percent values"""
-    return {k:round(AsPercent(d[k], sum(d.values())), 4) for k in d.keys()} # this looks better than CharacterFrequency, but still pretty bad
+    return {k:round(AsPercent(d[k], sum(d.values())), 4) for k in d.keys()} # this looks better but still pretty ugly
 
 def WriteToFile(Final: dict, freq: dict, sortby: str = "prompt") -> None:
     """Creates a text file for GenerateAllPrompts and writes data, sorts by `sortby` which defaults to prompt"""
@@ -59,7 +59,7 @@ def WriteToFile(Final: dict, freq: dict, sortby: str = "prompt") -> None:
             for i in freq:
                 f.write(FormatPrompt(i, freq[i]))
 
-# kinda bad and ugly, also only does 2 char prompts and is only made around 2 letter prompts so...
+# kinda bad and ugly, only does 1 set of prompts and doesnt take into account promptlength-1 or etc
 def GenerateAllPrompts(promptLength: int) -> None:
     """Creates a text file with all prompts equal to `promptLength` and their frequency of appearing"""
     wordlist = GetWordlist("dict/master.txt") # change this to the path for the dictionary
