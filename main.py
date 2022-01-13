@@ -24,6 +24,9 @@ def AsPercent(amount: int, total: int) -> float:
     """return the float of `amount` divided by `total`, if `total` is 0 return `0.0`"""
     return amount/total * 100 if total != 0 else 0.0
 
+def clamp(value, minv, maxv) -> int:
+    return max(min(value, maxv), minv)
+
 def GetWordlist(dirPath: str) -> List[str]:
     """Grab text file from `dirpath` and turns it into a list of words"""
     with open(dirPath, "r") as f:
@@ -38,7 +41,10 @@ def CheckString(string: str) -> bool:
 
 # formatting in the file to look nice
 def FormatPrompt(prompt: str, charFreq: float) -> str:
+    # 😃 👍
     if len(prompt) == 1:
+        prompt += "  "
+    elif len(prompt) == 2:
         prompt += " "
     return f"{prompt}  |  Frequency: {charFreq}%\n"
 
@@ -48,8 +54,8 @@ def PromptFrequency(d: dict) -> Dict[str, float]:
 
 def WriteToFile(Final: dict, freq: dict, sortby: str = "prompt") -> None:
     """Creates a text file for GenerateAllPrompts and writes data, sorts by `sortby` which defaults to prompt"""
-    with open("test.txt", "w") as f:
-        f.write(f"List of all valid prompts (x letters only) and their frequency of appearing as a percent | Blacklisted Characters: {blacklistedChars} | Sorted by {sortby}\n\n")
+    with open("test3.txt", "w") as f:
+        f.write(f"List of all valid prompts (1-3 letters only) and their frequency of appearing as a percent | Blacklisted Characters: {blacklistedChars} | Sorted by {sortby}\n\n")
     
         if sortby == "prompt":
             for i in Final.keys():
@@ -59,32 +65,35 @@ def WriteToFile(Final: dict, freq: dict, sortby: str = "prompt") -> None:
             for i in freq:
                 f.write(FormatPrompt(i, freq[i]))
 
+def GetSubStrings(word: str, promptLength) -> List[str]:
+    # thanks sev for making this look much nicer (and also take way less time and overall be better), but i ruined it anyway. 👍
+    # temp = []
+
+    # for i in range(len(word)):
+    #     for j in range(i+1, min(len(word)+1, i+promptLength+1)):
+    #         temp.append(word[i:j])
+
+    # return list(set(temp))
+    return list(set([word[i:j] for i in range(len(word)) for j in range(i+1, min(len(word)+1, i+promptLength+1))])) # ahahah
+
+
 # kinda bad and ugly, only does 1 set of prompts and doesnt take into account promptlength-1 or etc
 def GenerateAllPrompts(promptLength: int) -> None:
     """Creates a text file with all prompts equal to `promptLength` and their frequency of appearing"""
     wordlist = GetWordlist("dict/master.txt") # change this to the path for the dictionary
     s = {}
 
-    idx = 0
     for word in wordlist:
-        wlen = len(word)
-        while idx < wlen:
-            string = word[idx:idx + promptLength] 
-            if len(string) != promptLength:
-                idx += 1
-                continue
-            if CheckString(string):
-                if string not in s.keys():
-                    s[string] = 1
+        for substring in GetSubStrings(word, promptLength):
+            if CheckString(substring):
+                if substring not in s.keys():
+                    s[substring] = 0
                 else:
-                    s[string] += 1
-            idx += 1
-        else:
-            idx = 0
+                    s[substring] += 1
 
     unique = s.keys()
     WriteToFile(unique, PromptFrequency(s), sortby="frequency")
 
 start = time.time()
-GenerateAllPrompts(2)
+GenerateAllPrompts(3)
 print(f"Took: {time.time() - start}")
