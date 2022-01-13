@@ -1,15 +1,3 @@
-# • Default generation in the default mode tries to create two character prompts for the black and red bombs, and three character prompts for the skull bomb.
-# • Default generation in the hard mode is the same as the default mode.
-# • Default generation in the bullet mode tries to create one character prompts.
-
-# • All possible prompts will be generated from a single random word. (If the word is PORE, then PO, OR, and RE will be generated.)
-# • Prompts cannot be generated from a word that contains Z, J, Q, or X.
-# • If there are no words remaining which do not contain Z, J, Q, or X, the dictionary will be reset.
-# • The game will make a collection of "alternating prompts" from the generated prompts, which are prompts which alternate between vowels and consonants. (ex. AK, APE, PAC, but not AA, EE, PP.)
-# • The prompt generator will always use an alternating prompt over a non-alternating prompt.
-# • Every generated prompt will be given a "frequency," which is given based on the sum of each of its letters' frequency within English. (The letter E has a frequency of 12.02%, and the letter L has a frequency of 3.98%, so the prompt EL would have a frequency of 16.00)
-# • The prompt with the lowest frequency has a 0% chance of being selected, while the prompt with the highest frequency has the highest chance of being selected.
-
 from typing import Dict, List
 import time
 
@@ -65,7 +53,8 @@ def WriteToFile(Final: dict, freq: dict, sortby: str = "prompt") -> None:
             for i in freq:
                 f.write(FormatPrompt(i, freq[i]))
 
-def GetSubStrings(word: str, promptLength) -> List[str]:
+def GetSubStrings(word: str, promptLength: int) -> List[str]:
+    """Gets all substrings of a given `word` that are of `promptLength` length"""
     # thanks sev for making this look much nicer (and also take way less time and overall be better), but i ruined it anyway. 👍
     # temp = []
 
@@ -77,7 +66,6 @@ def GetSubStrings(word: str, promptLength) -> List[str]:
     return list(set([word[i:j] for i in range(len(word)) for j in range(i+1, min(len(word)+1, i+promptLength+1))])) # ahahah
 
 
-# kinda bad and ugly, only does 1 set of prompts and doesnt take into account promptlength-1 or etc
 def GenerateAllPrompts(promptLength: int) -> None:
     """Creates a text file with all prompts equal to `promptLength` and their frequency of appearing"""
     wordlist = GetWordlist("dict/master.txt") # change this to the path for the dictionary
